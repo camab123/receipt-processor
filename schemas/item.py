@@ -10,5 +10,5 @@ class Item(BaseModel):
         examples=["Mountain Dew 12PK"],
     )
     price: float = Field(
-        description="The total price payed for this item.", example=6.49
+        description="The total price payed for this item.", examples=[6.49]
     )

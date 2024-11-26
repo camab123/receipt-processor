@@ -4,11 +4,12 @@ from uuid import uuid4
 
 tables = ["receipts"]
 
+
 class DbEngine:
     """Database engine class: this will use json files to read and write data"""
 
     def __init__(self) -> None:
-        self.db_path = "api/db/data"
+        self.db_path = "db/data"
 
     def initialize_db(self) -> None:
         """Check if the database exists"""
@@ -37,6 +38,7 @@ class DbEngine:
         records = self.read(table)
         data["id"] = self.generate_id()
         records.append(data)
+        print(records)
         with open(f"{self.db_path}/{table}.json", "w") as file:
             json.dump(records, file)
         return data["id"]
