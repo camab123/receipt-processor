@@ -1,10 +1,10 @@
 FROM python:3.13
 
-WORKDIR /server
+WORKDIR /app
 
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt --no-cache-dir --upgrade
 
-COPY ./app /server/app
+COPY . /app
 
-CMD ["fastapi", "run", "app/main.py", "--port", "80"]
+CMD ["fastapi", "run", "app/api/main.py", "--port", "80"]

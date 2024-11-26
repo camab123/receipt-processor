@@ -1,7 +1,29 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+from fastapi import FastAPI, HTTPException
+from schemas.receipt import Receipt
+
+from lib.db_engine import DbEngine
+
+db = DbEngine()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    db.initialize_db()
+    yield
+    db.delete_database()
+
+
+app = FastAPI(lifespan=lifespan)
 
 @app.post("/receipts/process")
-async def process_receipts():
-    return {"message": "Processing receipts"}
+async def process_receipts(receipt: Receipt):
+    db.insert_one(receipt.__tablename__, receipt.model_dump())
+    return {"status": "success"}
+
+@app.get("/receipts/{id}/points")
+async def get_points(id: str):
+    receipt: Receipt = db.select_one("receipts", {"id": id})
+    if not receipt:
+        raise HTTPException(status_code=404, detail="Receipt not found")
+    return {"points": receipt.get_points()}
