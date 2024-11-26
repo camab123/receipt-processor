@@ -10,7 +10,6 @@ db = DbEngine()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Setting up database")
     db.initialize_db()
     yield
     db.delete_database()
@@ -21,6 +20,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.post("/receipts/process")
 async def process_receipts(receipt: Receipt):
+    """ Store the receipt in the database and return the id """
     id = db.insert_one(
         table=receipt.__tablename__, data=receipt.model_dump(mode="json")
     )
@@ -29,6 +29,7 @@ async def process_receipts(receipt: Receipt):
 
 @app.get("/receipts/{id}/points")
 async def get_points(id: str):
+    """ Return the points for a given receipt """
     receipt = Receipt(**db.select_one(table="receipts", id=id))
     if not receipt:
         raise HTTPException(status_code=404, detail="Receipt not found")
