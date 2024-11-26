@@ -25,8 +25,9 @@ class Receipt(BaseModel):
     items: list[Item] = Field(
         description="A list of items purchased on the receipt.", min_length=1
     )
-    total: float = Field(
-        description="The total amount paid on the receipt.", examples=[6.49]
+    total: str = Field(
+        description="The total amount paid on the receipt.", pattern="^\\d+\\.\\d{2}$",
+        examples=["6.49"],
     )
 
     def get_points(self) -> int:
@@ -35,7 +36,7 @@ class Receipt(BaseModel):
         # Count of alphanumeric characters in the retailer name
         points += Receipt.alphanumeric_count(self.retailer)
         # Check if the total is a round number
-        points += 50 if self.total.is_integer() else 0
+        points += 50 if float(self.total).is_integer() else 0
         # Check if the total is a multiple of 0.25
         points += 25 if self.is_total_multiple_of_quarter() else 0
         # Add points for every 2 items purchased
@@ -55,7 +56,7 @@ class Receipt(BaseModel):
 
     def is_total_multiple_of_quarter(self):
         """Check if the total is a multiple of 0.25"""
-        return self.total % 0.25 == 0
+        return float(self.total) % 0.25 == 0
 
     def get_trimmed_description_value(self):
         """
