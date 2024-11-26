@@ -1,6 +1,7 @@
-from datetime import date, time
+import math
+from datetime import date, datetime, time
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field
 
 from schemas.item import Item
 
@@ -32,9 +33,11 @@ class Receipt(BaseModel):
         """Calculate the points for the given receipt"""
         points = 0
         # Count of alphanumeric characters in the retailer name
-        points += self.alphanumeric_count(self.retailer)
+        points += Receipt.alphanumeric_count(self.retailer)
         # Check if the total is a round number
         points += 50 if self.total.is_integer() else 0
+        # Check if the total is a multiple of 0.25
+        points += 25 if self.is_total_multiple_of_quarter() else 0
         # Add points for every 2 items purchased
         points += len(self.items) // 2 * 5
         # Add points if trimmed
@@ -46,8 +49,13 @@ class Receipt(BaseModel):
 
         return points
 
-    def alphanumeric_count(value: str):
+    @staticmethod
+    def alphanumeric_count(value: str) -> int:
         return sum(char.isalnum() for char in value)
+    
+    def is_total_multiple_of_quarter(self):
+        """Check if the total is a multiple of 0.25"""
+        return self.total % 0.25 == 0
 
     def get_trimmed_description_value(self):
         """
@@ -60,7 +68,8 @@ class Receipt(BaseModel):
         for item in self.items:
             trimmed_length = len(item.shortDescription.strip())
             if trimmed_length % 3 == 0:
-                points += round(item.price * 0.2)
+                item_points = math.ceil(item.price * 0.2)
+                points += item_points
         return points
 
     def is_day_of_purchase_odd(self):
@@ -70,4 +79,5 @@ class Receipt(BaseModel):
         self, start_time: time = time(14, 0), end_time: time = time(16, 0)
     ):
         """Check if the purchase time is between a range"""
-        return start_time <= self.purchaseTime <= end_time
+        time_to_check = datetime.strptime(self.purchaseTime, "%H:%M").time()
+        return start_time < time_to_check < end_time

@@ -29,7 +29,7 @@ async def process_receipts(receipt: Receipt):
 
 @app.get("/receipts/{id}/points")
 async def get_points(id: str):
-    receipt: Receipt = db.select_one(table="receipts", query={"id": id})
+    receipt = Receipt(**db.select_one(table="receipts", id=id))
     if not receipt:
         raise HTTPException(status_code=404, detail="Receipt not found")
     return {"points": receipt.get_points()}

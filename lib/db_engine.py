@@ -38,16 +38,15 @@ class DbEngine:
         records = self.read(table)
         data["id"] = self.generate_id()
         records.append(data)
-        print(records)
         with open(f"{self.db_path}/{table}.json", "w") as file:
             json.dump(records, file)
         return data["id"]
 
-    def select_one(self, table, query) -> dict | None:
-        """Select one record from a table"""
+    def select_one(self, table: str, id: str) -> dict | None:
+        """Select one record from a table via id"""
         records = self.read(table)
         for record in records:
-            if record == query:
+            if record["id"] == id:
                 return record
         return None
 
