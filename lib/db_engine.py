@@ -32,13 +32,14 @@ class DbEngine:
         with open(f"{self.db_path}/{table}.json") as file:
             return json.load(file)
 
-    def insert_one(self, table: str, data: dict) -> None:
+    def insert_one(self, table: str, data: dict) -> str:
         """Insert one record into a table"""
         records = self.read(table)
-        data[self.generate_id()] = str(uuid4())
+        data["id"] = self.generate_id()
         records.append(data)
         with open(f"{self.db_path}/{table}.json", "w") as file:
             json.dump(records, file)
+        return data["id"]
 
     def select_one(self, table, query) -> dict | None:
         """Select one record from a table"""

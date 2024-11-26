@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
-from schemas.receipt import Receipt
 
 from lib.db_engine import DbEngine
+from schemas.receipt import Receipt
 
 db = DbEngine()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -16,10 +17,12 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
 @app.post("/receipts/process")
 async def process_receipts(receipt: Receipt):
-    db.insert_one(receipt.__tablename__, receipt.model_dump())
-    return {"status": "success"}
+    id = db.insert_one(receipt.__tablename__, receipt.model_dump())
+    return {"id": id}
+
 
 @app.get("/receipts/{id}/points")
 async def get_points(id: str):
