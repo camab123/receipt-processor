@@ -9,4 +9,4 @@ COPY . /app
 
 EXPOSE 80
 
-CMD ["fastapi", "run", "api/main.py", "--port", "80"]
+CMD ["fastapi", "run", "api/main.py", "--port", "80", "--reload"]

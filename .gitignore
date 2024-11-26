@@ -8,4 +8,4 @@ __pycache__/
 .venv/
 
 # DB files
-api/db/data/*.json
+db/data/*.json

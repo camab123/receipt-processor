@@ -52,7 +52,7 @@ class Receipt(BaseModel):
     @staticmethod
     def alphanumeric_count(value: str) -> int:
         return sum(char.isalnum() for char in value)
-    
+
     def is_total_multiple_of_quarter(self):
         """Check if the total is a multiple of 0.25"""
         return self.total % 0.25 == 0
