@@ -6,3 +6,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 .venv/
+
+# DB files
+api/db/data/*.json
