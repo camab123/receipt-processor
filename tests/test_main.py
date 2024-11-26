@@ -41,6 +41,7 @@ def test_process_receipts():
 
 
 def test_get_points():
+    """Test the get points endpoint"""
     with client as c:
         response = c.post("/receipts/process", json=test_receipt_object)
         assert response.status_code == 200
